@@ -1,0 +1,43 @@
+- hosts: all
+  become: yes
+  
+  
+  tasks:
+ 
+  - name: install Aptitude
+    apt:
+      name: aptitude
+      state: present
+      update_cache: true
+
+  - name: install Docker
+    apt:
+      name: docker.io
+      state: present
+      update_cache: false
+
+  - name: Install Transport HTTPS
+    apt:
+      name: apt-transport-https
+      state: present
+
+  - name: install kubelet
+    apt:
+      name: kubelet
+      state: present
+      update_cache: false
+
+  - name: install kubeadm
+    apt:
+      name: kubeadm
+      state: present
+
+- hosts: master1
+  become: yes
+  tasks:
+
+- name: install kubectl
+  apt:
+  name: kubectl
+  state: present
+  force: yes

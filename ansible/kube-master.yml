@@ -1,0 +1,43 @@
+- hosts: master1
+  become: yes
+  tasks:
+
+    - name: Add the "kube" group
+      group:
+        name: kube
+        state: present
+
+    - name: Add the user "kube"
+      user:
+        name: kube
+        comment: Kubernetes user
+        group: kube
+
+    - name: initialize the cluster
+      shell: kubeadm init --pod-network-cidr=10.99.0.0/16 >> cluster_init.txt
+      args:
+        chdir: $HOME
+        creates: cluster_init.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: kube
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kube/.kube/config
+        remote_src: yes
+        owner: kube
+
+    - name: install Pod network
+      become: yes
+      become_user: kube
+      shell: kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml >> pod_network_setup.txt
+      args:
+        chdir: $HOME
+        creates: pod_network_setup.txt
