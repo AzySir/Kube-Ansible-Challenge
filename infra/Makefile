@@ -32,6 +32,18 @@ create-table:
 	--provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
 	--region $(REGION)
 
+apply:
+	terraform apply --auto-approve
+
+destroy:
+	terraform destroy
+
+plan:
+	terraform plan
+
 init: 
-	terraform init -backend-config="region=$(KEY)" -backend-config="region=$(REGION)" -backend-config=bucket=$(BUCKETNAME) -backend-config=dynamodb_table=$(LOCKTABLE) 
+	terraform init -backend-config="key=$(KEY)" \
+	-backend-config="region=$(REGION)" \
+	-backend-config=bucket=$(BUCKETNAME) \
+	-backend-config=dynamodb_table=$(LOCKTABLE) 
 
