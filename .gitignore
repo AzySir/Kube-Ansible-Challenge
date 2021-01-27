@@ -9,3 +9,5 @@ test/vagrant-spec/.vagrant/
 
 # Box logs
 *console.log
+.terraform
+.terraform/*
