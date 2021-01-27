@@ -3,7 +3,7 @@
 REGION=eu-west-2
 BUCKETNAME=everis-codechallenge-statefile
 LOCKTABLE=everis-codechallenge-state-lock
-
+KEY=state
 
 # Creates the State Bucket AND DynamoDB Lock Table
 create-state: create-bucket lockdown-bucket create-table
@@ -14,6 +14,7 @@ create-bucket:
 	@aws s3api create-bucket --bucket $(BUCKETNAME) \
 	--region $(REGION) \
 	--create-bucket-configuration LocationConstraint=$(REGION)
+	@aws s3api put-object --bucket $(BUCKETNAME) --key $(KEY)/ --region $(REGION)
 
 # Lock Down Bucket From Public
 lockdown-bucket:
@@ -32,5 +33,5 @@ create-table:
 	--region $(REGION)
 
 init: 
-	terraform init -backend-config="region=$(REGION)" -backend-config=bucket=$(BUCKETNAME) -backend-config=dynamodb_table=$(LOCKTABLE) 
+	terraform init -backend-config="region=$(KEY)" -backend-config="region=$(REGION)" -backend-config=bucket=$(BUCKETNAME) -backend-config=dynamodb_table=$(LOCKTABLE) 
 
