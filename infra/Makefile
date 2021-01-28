@@ -1,9 +1,6 @@
-.PHONY: all
+include var.mk
 
-REGION=eu-west-2
-BUCKETNAME=everis-codechallenge-statefile
-LOCKTABLE=everis-codechallenge-state-lock
-KEY=state
+.PHONY: all
 
 # Creates the State Bucket AND DynamoDB Lock Table
 create-state: create-bucket lockdown-bucket create-table
