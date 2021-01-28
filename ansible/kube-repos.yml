@@ -4,11 +4,11 @@
 
   - name: add Kubernetes apt-key
     apt_key:
-      url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+      url: "{{ hostvars.master1.apt_key }}"
       state: present
 
   - name: add Kubernetes' APT repository
     apt_repository:
-      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      repo: "{{ hostvars.worker1.repo }}"
       state: present
       filename: 'kubernetes'
