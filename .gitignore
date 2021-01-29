@@ -11,3 +11,4 @@ test/vagrant-spec/.vagrant/
 *console.log
 .terraform
 .terraform/*
+*.terraform*
