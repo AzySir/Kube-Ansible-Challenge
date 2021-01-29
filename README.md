@@ -24,22 +24,23 @@ As a result I have used 2 AWS EC2 instances created via terraform including a pu
 
 4. Added the below variables into the hosts inventory.ini
 
-```
-apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" 
-repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"
-```
+        ```
+        apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" 
+        repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"
+        ```
 
-And referenced them in the playbook as so - 
+        And referenced them in the playbook as so - 
 
-```
-url: "{{ hostvars.master1.apt_key }}"
-repo: "{{ hostvars.worker1.repo }}"
-```
+        ```
+        url: "{{ hostvars.master1.apt_key }}"
+        repo: "{{ hostvars.worker1.repo }}"
+        ```
 
 
 5. Ran the command: `ansible-playbook kube-repos.yml -i inventory.ini --private-key ../keys/everischallenge`
 
 6. Ran the ansible playbook. It seems that the steps that did not work included (below). 
+
 - 
 ```
 ansible-playbook kube-deps.yml -i inventory.ini --private-key ../keys/everischallenge
