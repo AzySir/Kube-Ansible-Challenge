@@ -14,15 +14,15 @@ As a result I have used 2 AWS EC2 instances created via terraform including a pu
 
 ## Notes for solution
 
-1. I was not able to use Vagrant or VMs due to the fact that I have a Mac OSX M1 Silicon. VirtualBox does not support an ARM64 architecture
+* 1) I was not able to use Vagrant or VMs due to the fact that I have a Mac OSX M1 Silicon. VirtualBox does not support an ARM64 architecture
 
-2. So I decided to create the master/worker as an ec2 instance along with user data for installation. 
+* 2) So I decided to create the master/worker as an ec2 instance along with user data for installation. 
 
-3. I created both of these via Terraform located in the /infra folder. Please follow the readme in that folder for more information. The user deploy was created via Terraform in the user data (see conclusion notes for more info). 
+* 3) I created both of these via Terraform located in the /infra folder. Please follow the readme in that folder for more information. The user deploy was created via Terraform in the user data (see conclusion notes for more info). 
 
 * **Note:** The /Infra folder has everything INFRASTRUCTURE specific - please see for more info
 
-4. Added the below variables into the hosts inventory.ini
+* 4) Added the below variables into the hosts inventory.ini
 
         ```
         apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" 
@@ -37,9 +37,9 @@ As a result I have used 2 AWS EC2 instances created via terraform including a pu
         ```
 
 
-5. Ran the command: `ansible-playbook kube-repos.yml -i inventory.ini --private-key ../keys/everischallenge`
+* 5) Ran the command: `ansible-playbook kube-repos.yml -i inventory.ini --private-key ../keys/everischallenge`
 
-6. Ran the ansible playbook. It seems that the steps that did not work included (below). 
+* 6) Ran the ansible playbook. It seems that the steps that did not work included (below). 
 
 - 
 ```
@@ -71,7 +71,7 @@ due to hardware constraints of the ec2.
         mode: 0755
 ```
 
-7. 
+* 7) 
 * Command Ran: ansible-playbook kube-master.yml -i inventory.ini --private-key ../keys/everischallenge 
 
 * It seems that the stage below failed. When I went to investigate and run these commands manually I realised there was a "not root user" error thrown.
@@ -92,7 +92,7 @@ due to hardware constraints of the ec2.
         owner: kube
       become: true
 
-  8.
+* 8)
   * To verify the pods are working on the Master I checked the pod_network_setup.txt first according to the playbook. I could see that something had been installed
   * Then I tried kubectl get pods and received this error "No resources found in default namespace"
   * So I ran `kubectl get namespace` which returned -
@@ -119,7 +119,7 @@ due to hardware constraints of the ec2.
       kube-system   kube-scheduler-ip-10-0-0-135               1/1     Running   0          11m 
       ```
   
-  9. Ran the following command: ansible-playbook kube-workers.yml -i inventory.ini --private-key ../keys/everischallenge
+* 9) Ran the following command: ansible-playbook kube-workers.yml -i inventory.ini --private-key ../keys/everischallenge
     * Recevied this error - "skipping: no hosts matched" for the step in the playbook below 
       ```
       - hosts: workers
@@ -132,7 +132,7 @@ due to hardware constraints of the ec2.
           chdir: $HOME
           creates: node_join.txt
       ```
-  10. To see that the worker pod was running I ran the following command from master
+* 10) To see that the worker pod was running I ran the following command from master
   * kube@ip-10-0-0-135:~$ kubectl get pods -o wide
   * The IP 10.0.0.35 is the ec2 instance of the worker
   * 10.99.0.0/16 is the ip address that was used when the kubeadm init command was run via ansible. 
