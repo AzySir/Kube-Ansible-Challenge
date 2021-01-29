@@ -21,7 +21,8 @@ To run please write `Make <command>`
  
 ## Pre-requisite
 
-**create-state**
+**make create-state**
+
 create-state fulfils the pre-requisites required for a Terraform setup. This includes creating the following 
  
  * S3 Backend Bucket (aws cli)
@@ -34,7 +35,7 @@ create-state fulfils the pre-requisites required for a Terraform setup. This inc
 
 ## Usage
 
-**init**
+**make init**
 
 After the pre-requisite of `make create-state` has been executed please continue on to initialising the terraform directory. This will dynamically add a key, bucketname, region and locktable depending on the variables that are located inside of the var.mk
 
