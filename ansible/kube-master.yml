@@ -33,6 +33,7 @@
         dest: /home/kube/.kube/config
         remote_src: yes
         owner: kube
+      become: true
 
     - name: install Pod network
       become: yes
