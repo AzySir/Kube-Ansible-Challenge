@@ -4,6 +4,7 @@
 
 Set this environment variable ANSIBLE_HOST_KEY_CHECKING=false so that you dont' get prompted for fingerprints when sshing via ansible
 
+---
 
 ## IMPORTANT ARCHITECTUAL INFO
 Due to the fact that I had to use an Apple M1 Silicon I faced issues with virtualisation since I have an arm64 architecture. This meant that the VirtualBox set up provided via Vagrant would not work
@@ -11,22 +12,36 @@ accordingly. Unfortunately I have no access to any other devices.
 
 As a result I have used 2 AWS EC2 instances created via terraform including a public subnet, internet gateway, and elastic IPs. The EC2s have user-data to mirror the vagrant start ups.
 
+---
 
 ## Notes for solution
 
+---
+
 * 1) I was not able to use Vagrant or VMs due to the fact that I have a Mac OSX M1 Silicon. VirtualBox does not support an ARM64 architecture
 
-* 2) So I decided to create the master/worker as an ec2 instance along with user data for installation. 
+* Instead I created a makefile to replicate the vagrant. Run `make help` to see commands
+
+---
+
+* 2) I decided to create the master/worker as an ec2 instance along with user data for installation. 
+
+---
 
 * 3) I created both of these via Terraform located in the /infra folder. Please follow the readme in that folder for more information. The user deploy was created via Terraform in the user data (see conclusion notes for more info). 
 
+* This also has it's own Makefile to make things easier
+
 * **Note:** The /Infra folder has everything INFRASTRUCTURE specific - please see for more info
+
+---
 
 * 4) Added the below variables into the hosts inventory.ini
 
         ```
         apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" 
         repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
         ```
 
         And referenced them in the playbook as so - 
