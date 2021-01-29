@@ -18,21 +18,21 @@ As a result I have used 2 AWS EC2 instances created via terraform including a pu
 
 ---
 
-* 1) I was not able to use Vagrant or VMs due to the fact that I have a Mac OSX M1 Silicon. VirtualBox does not support an ARM64 architecture
+**1)** I was not able to use Vagrant or VMs due to the fact that I have a Mac OSX M1 Silicon. VirtualBox does not support an ARM64 architecture
 
-* Instead I created a makefile to replicate the vagrant. Run `make help` to see commands
-
----
-
-* 2) I decided to create the master/worker as an ec2 instance along with user data for installation. 
+Instead I created a makefile to replicate the vagrant. Run `make help` to see commands
 
 ---
 
-* 3) I created both of these via Terraform located in the /infra folder. Please follow the readme in that folder for more information. The user deploy was created via Terraform in the user data (see conclusion notes for more info). 
+2) I decided to create the master/worker as an ec2 instance along with user data for installation. 
 
-* This also has it's own Makefile to make things easier
+---
 
-* **Note:** The /Infra folder has everything INFRASTRUCTURE specific - please see for more info
+**3)** I created both of these via Terraform located in the /infra folder. Please follow the readme in that folder for more information. The user deploy was created via Terraform in the user data (see conclusion notes for more info). 
+
+This also has it's own Makefile to make things easier
+
+**Note:** The /Infra folder has everything INFRASTRUCTURE specific - please see for more info
 
 ---
 
