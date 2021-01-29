@@ -41,20 +41,19 @@ As a result I have used 2 AWS EC2 instances created via terraform including a pu
 
 * 6) Ran the ansible playbook. It seems that the steps that did not work included (below). 
 
-- 
 ```
 ansible-playbook kube-deps.yml -i inventory.ini --private-key ../keys/everischallenge
 ```
 
-* To debug this I SSHed into the master node and realised that the kubeadm did not init properly 
+- - To debug this I SSHed into the master node and realised that the kubeadm did not init properly 
 due to hardware constraints of the ec2. 
 
-* As a result I upgraded the sizes of the ec2 to run this again
+- - As a result I upgraded the sizes of the ec2 to run this again
 
-* The EC2 Public IPs did not need to change due to an EIP attached to both. As a result the Public IPs remained the same.
+- - The EC2 Public IPs did not need to change due to an EIP attached to both. As a result the Public IPs remained the same.
 
-* I proceeded to run the ansible steps from 1-5 again and it worked as expected
--
+- - I proceeded to run the ansible steps from 1-5 again and it worked as expected
+
 ```
     name: initialize the cluster
       shell: kubeadm init --pod-network-cidr=10.99.0.0/16 >> cluster_init.txt
@@ -71,18 +70,21 @@ due to hardware constraints of the ec2.
         mode: 0755
 ```
 
-* 7) 
-* Command Ran: ansible-playbook kube-master.yml -i inventory.ini --private-key ../keys/everischallenge 
+* 7) Command Ran: `ansible-playbook kube-master.yml -i inventory.ini --private-key ../keys/everischallenge`
 
-* It seems that the stage below failed. When I went to investigate and run these commands manually I realised there was a "not root user" error thrown.
+- - It seems that the stage below failed. When I went to investigate and run these commands manually I realised there was a "not root user" error thrown.
 
-* As a result I ran the following commands to make the setup at 0 again.
-  * kubeadm reset
-  * systemctl restart kubelet
+- - As a result I ran the following commands to make the setup at 0 again.
+    ```
+        kubeadm reset
+        systemctl restart kubelet
+    ```
 
-* Then I ran the below -
-  * sudo su
-  * kubeadm init --pod-network-cidr=10.99.0.0/16 
+- - Then I ran the below -
+    
+    ```
+    sudo su
+    kubeadm init --pod-network-cidr=10.99.0.0/16 
 
     - name: copy admin.conf to user's kube config
       copy:
@@ -91,11 +93,11 @@ due to hardware constraints of the ec2.
         remote_src: yes
         owner: kube
       become: true
+    ```
+* 8) To verify the pods are working on the Master I checked the pod_network_setup.txt first according to the playbook. I could see that something had been installed
 
-* 8)
-  * To verify the pods are working on the Master I checked the pod_network_setup.txt first according to the playbook. I could see that something had been installed
-  * Then I tried kubectl get pods and received this error "No resources found in default namespace"
-  * So I ran `kubectl get namespace` which returned -
+  - - Then I tried kubectl get pods and received this error "No resources found in default namespace"
+  - - So I ran `kubectl get namespace` which returned -
 
       ```
       NAME              STATUS   AGE
@@ -104,7 +106,7 @@ due to hardware constraints of the ec2.
       kube-public       Active   10m
       kube-system       Active   10m
       ```
-  * Then I ran `kubectl get pods --all-namespaces` to confirm pods were working and received - 
+  - - Then I ran `kubectl get pods --all-namespaces` to confirm pods were working and received - 
 
       ```
       NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
