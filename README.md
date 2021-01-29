@@ -4,6 +4,8 @@
 
 Set this environment variable ANSIBLE_HOST_KEY_CHECKING=false so that you dont' get prompted for fingerprints when sshing via ansible
 
+You must also set the IP addresses for each node inside of the inventory.ini when you have run the `make create` in 
+
 ---
 
 ## IMPORTANT ARCHITECTUAL INFO
@@ -39,13 +41,13 @@ This also has it's own Makefile to make things easier
 **4)** Added the below variables into the hosts inventory.ini
 
 ```
-#Inventory.ini
-apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" 
-repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"
+    #Inventory.ini
+    apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" 
+    repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
-#Playbook Reference
-url: "{{ hostvars.master1.apt_key }}"
-repo: "{{ hostvars.worker1.repo }}"
+    #Playbook Reference
+    url: "{{ hostvars.master1.apt_key }}"
+    repo: "{{ hostvars.worker1.repo }}"
 
 ```
 
@@ -58,7 +60,7 @@ repo: "{{ hostvars.worker1.repo }}"
 **6)** Ran the ansible playbook. It seems that the steps that did not work included (below). 
 
 ```
-ansible-playbook kube-deps.yml -i inventory.ini --private-key ../keys/everischallenge
+    ansible-playbook kube-deps.yml -i inventory.ini --private-key ../keys/everischallenge
 ```
 
 To debug this I SSHed into the master node and realised that the kubeadm did not init properly 
@@ -102,16 +104,16 @@ As a result I ran the following commands to make the setup at 0 again.
 Then I ran the below -
     
 ```
-sudo su
-kubeadm init --pod-network-cidr=10.99.0.0/16 
+    sudo su
+    kubeadm init --pod-network-cidr=10.99.0.0/16 
 
-- name: copy admin.conf to user's kube config
-    copy:
-    src: /etc/kubernetes/admin.conf
-    dest: /home/kube/.kube/config
-    remote_src: yes
-    owner: kube
-    become: true
+    - name: copy admin.conf to user's kube config
+        copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kube/.kube/config
+        remote_src: yes
+        owner: kube
+        become: true
 ```
 
 ---
