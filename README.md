@@ -1,3 +1,62 @@
+# README (Notes located under this file)
+---
+
+## infra/var.mk
+
+Contains the required variables for the makefile to work
+
+## SSH Keys Directory for ec2 instances
+
+Normally would never put the keys into a repository for use of simplicity I have gone ahead and followed this path
+
+```
+KEYS="./keys/everischallenge"
+```
+
+# Name of Master/Worker nodes
+
+Easy way to change name of the ec2 names
+
+```
+MASTERNAME=Everis-master
+WORKERNAME=Everis-worker
+```
+
+# make up
+
+Will cd into the infra folder and run terraform apply
+
+# SSH into the Worker ec2
+
+This will fetch the ip from the aws cli according to the name of the ec2
+
+```
+    make ssh-worker
+```
+
+# SSH into the Master EC2
+
+This will fetch the ip from the aws cli according to the name of the ec2
+
+```
+    make ssh-master
+```
+
+# make halt
+
+Will stop the ec2 instances
+
+
+# make start
+
+Will start the ec2 instances
+
+# make help 
+
+A break down of the make commands 
+	
+---
+
 # Notes
 
 ## Pre-Requisites 
