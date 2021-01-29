@@ -24,7 +24,10 @@ As a result I have used 2 AWS EC2 instances created via terraform including a pu
 
 4. Added the below variables into the hosts inventory.ini
 
-`apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"`
+```
+apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" 
+repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"
+```
 
 And referenced them in the playbook as so - 
 
@@ -34,13 +37,13 @@ repo: "{{ hostvars.worker1.repo }}"
 ```
 
 
-5. Ran the command -
-
-`ansible-playbook kube-repos.yml -i inventory.ini --private-key ../keys/everischallenge`
+5. Ran the command: `ansible-playbook kube-repos.yml -i inventory.ini --private-key ../keys/everischallenge`
 
 6. Ran the ansible playbook. It seems that the steps that did not work included (below). 
-
-`ansible-playbook kube-deps.yml -i inventory.ini --private-key ../keys/everischallenge`
+- 
+```
+ansible-playbook kube-deps.yml -i inventory.ini --private-key ../keys/everischallenge
+```
 
 * To debug this I SSHed into the master node and realised that the kubeadm did not init properly 
 due to hardware constraints of the ec2. 
@@ -50,8 +53,9 @@ due to hardware constraints of the ec2.
 * The EC2 Public IPs did not need to change due to an EIP attached to both. As a result the Public IPs remained the same.
 
 * I proceeded to run the ansible steps from 1-5 again and it worked as expected
-
--  - name: initialize the cluster
+-
+```
+    name: initialize the cluster
       shell: kubeadm init --pod-network-cidr=10.99.0.0/16 >> cluster_init.txt
       args:
         chdir: $HOME
@@ -64,6 +68,7 @@ due to hardware constraints of the ec2.
         path: $HOME/.kube
         state: directory
         mode: 0755
+```
 
 7. 
 * Command Ran: ansible-playbook kube-master.yml -i inventory.ini --private-key ../keys/everischallenge 
