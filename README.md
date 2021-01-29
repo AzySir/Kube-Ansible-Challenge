@@ -26,7 +26,7 @@ Instead I created a makefile to replicate the vagrant. Run `make help` to see co
 
 ---
 
-2) I decided to create the master/worker as an ec2 instance along with user data for installation. 
+**2)** I decided to create the master/worker as an ec2 instance along with user data for installation. 
 
 ---
 
