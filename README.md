@@ -149,37 +149,46 @@ kube-system   kube-scheduler-ip-10-0-0-135               1/1     Running   0    
 
 Recevied this error - "skipping: no hosts matched" for the step in the playbook below 
 
-      ```
-      - hosts: workers
+```
+- hosts: workers
     become: yes
     tasks:
 
-      - name: join cluster
-        shell: "{{ hostvars['master'].join_command }} >> node_join.txt"
-        args:
-          chdir: $HOME
-          creates: node_join.txt
-      ```
-* 10) To see that the worker pod was running I ran the following command from master
-  * kube@ip-10-0-0-135:~$ kubectl get pods -o wide
-  * The IP 10.0.0.35 is the ec2 instance of the worker
-  * 10.99.0.0/16 is the ip address that was used when the kubeadm init command was run via ansible. 
-    As you can see the calico nodes are there I'm not sure if this is expected I believe it is. 
+    - name: join cluster
+    shell: "{{ hostvars['master'].join_command }} >> node_join.txt"
+    args:
+        chdir: $HOME
+        creates: node_join.txt
+```
 
-    ```
-    NAME                                       READY   STATUS    RESTARTS   AGE     IP            NODE            NOMINATED NODE   READINESS GATES
-    calico-kube-controllers-6dfcd885bf-r2h6t   1/1     Running   0          3h42m   10.99.208.3   ip-10-0-0-135   <none>           <none>
-    calico-node-f2sw9                          1/1     Running   0          25m     10.0.0.35     ip-10-0-0-35    <none>           <none>
-    calico-node-gtjj8                          1/1     Running   0          3h42m   10.0.0.135    ip-10-0-0-135   <none>           <none>
-    coredns-74ff55c5b-69b2q                    1/1     Running   0          3h42m   10.99.208.2   ip-10-0-0-135   <none>           <none>
-    coredns-74ff55c5b-gpddk                    1/1     Running   0          3h42m   10.99.208.1   ip-10-0-0-135   <none>           <none>
-    etcd-ip-10-0-0-135                         1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
-    kube-apiserver-ip-10-0-0-135               1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
-    kube-controller-manager-ip-10-0-0-135      1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
-    kube-proxy-2vp2f                           1/1     Running   0          25m     10.0.0.35     ip-10-0-0-35    <none>           <none>
-    kube-proxy-45pvb                           1/1     Running   0          3h42m   10.0.0.135    ip-10-0-0-135   <none>           <none>
-    kube-scheduler-ip-10-0-0-135               1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
-    ```
+---
+
+**10)** To see that the worker pod was running I ran the following command from master
+  
+```
+  kube@ip-10-0-0-135:~$ kubectl get pods -o wide
+```
+
+The IP 10.0.0.35 is the ec2 instance of the worker
+
+10.99.0.0/16 is the ip address that was used when the kubeadm init command was run via ansible. 
+
+As you can see the calico nodes are there I'm not sure if this is expected I believe it is. 
+
+```
+NAME                                       READY   STATUS    RESTARTS   AGE     IP            NODE            NOMINATED NODE   READINESS GATES
+calico-kube-controllers-6dfcd885bf-r2h6t   1/1     Running   0          3h42m   10.99.208.3   ip-10-0-0-135   <none>           <none>
+calico-node-f2sw9                          1/1     Running   0          25m     10.0.0.35     ip-10-0-0-35    <none>           <none>
+calico-node-gtjj8                          1/1     Running   0          3h42m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+coredns-74ff55c5b-69b2q                    1/1     Running   0          3h42m   10.99.208.2   ip-10-0-0-135   <none>           <none>
+coredns-74ff55c5b-gpddk                    1/1     Running   0          3h42m   10.99.208.1   ip-10-0-0-135   <none>           <none>
+etcd-ip-10-0-0-135                         1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+kube-apiserver-ip-10-0-0-135               1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+kube-controller-manager-ip-10-0-0-135      1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+kube-proxy-2vp2f                           1/1     Running   0          25m     10.0.0.35     ip-10-0-0-35    <none>           <none>
+kube-proxy-45pvb                           1/1     Running   0          3h42m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+kube-scheduler-ip-10-0-0-135               1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+```
 
 
 ## Conclusion Notes 
