@@ -26,5 +26,6 @@ data "template_file" "worker_user_data" {
   template = file("./user_data/worker.sh")
   vars = {
     masteraddress = aws_instance.master.public_ip
+    ssh_key = var.key
   }
 }
