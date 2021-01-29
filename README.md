@@ -1,3 +1,158 @@
+# Notes
+
+## Pre-Requisites 
+
+Set this environment variable ANSIBLE_HOST_KEY_CHECKING=false so that you dont' get prompted for fingerprints when sshing via ansible
+
+
+## IMPORTANT ARCHITECTUAL INFO
+Due to the fact that I had to use an Apple M1 Silicon I faced issues with virtualisation since I have an arm64 architecture. This meant that the VirtualBox set up provided via Vagrant would not work
+accordingly. Unfortunately I have no access to any other devices. 
+
+As a result I have used 2 AWS EC2 instances created via terraform including a public subnet, internet gateway, and elastic IPs. The EC2s have user-data to mirror the vagrant start ups.
+
+
+## Notes for solution
+
+1. I was not able to use Vagrant or VMs due to the fact that I have a Mac OSX M1 Silicon. VirtualBox does not support an ARM64 architecture
+
+2. So I decided to create the master/worker as an ec2 instance along with user data for installation. 
+
+3. I created both of these via Terraform located in the /infra folder. Please follow the readme in that folder for more information. The user deploy was created via Terraform in the user data (see conclusion notes for more info). 
+
+**The /Infra folder has everything INFRASTRUCTURE specific - please see for more info**
+
+4. Added the below variables into the hosts inventory.ini
+
+`apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"`
+
+And referenced them in the playbook as so - 
+
+```
+url: "{{ hostvars.master1.apt_key }}"
+repo: "{{ hostvars.worker1.repo }}"
+```
+
+
+5. Ran the command -
+
+`ansible-playbook kube-repos.yml -i inventory.ini --private-key ../keys/everischallenge`
+
+6. Ran the ansible playbook. It seems that the steps that did not work included (below). 
+
+`ansible-playbook kube-deps.yml -i inventory.ini --private-key ../keys/everischallenge`
+
+* To debug this I SSHed into the master node and realised that the kubeadm did not init properly 
+due to hardware constraints of the ec2. 
+
+* As a result I upgraded the sizes of the ec2 to run this again
+
+* The EC2 Public IPs did not need to change due to an EIP attached to both. As a result the Public IPs remained the same.
+
+* I proceeded to run the ansible steps from 1-5 again and it worked as expected
+
+-  - name: initialize the cluster
+      shell: kubeadm init --pod-network-cidr=10.99.0.0/16 >> cluster_init.txt
+      args:
+        chdir: $HOME
+        creates: cluster_init.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: kube
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+7. 
+* Command Ran: ansible-playbook kube-master.yml -i inventory.ini --private-key ../keys/everischallenge 
+
+* It seems that the stage below failed. When I went to investigate and run these commands manually I realised there was a "not root user" error thrown.
+
+* As a result I ran the following commands to make the setup at 0 again.
+  * kubeadm reset
+  * systemctl restart kubelet
+
+* Then I ran the below -
+  * sudo su
+  * kubeadm init --pod-network-cidr=10.99.0.0/16 
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kube/.kube/config
+        remote_src: yes
+        owner: kube
+      become: true
+
+  8.
+  * To verify the pods are working on the Master I checked the pod_network_setup.txt first according to the playbook. I could see that something had been installed
+  * Then I tried kubectl get pods and received this error "No resources found in default namespace"
+  * So I ran `kubectl get namespace` which returned -
+
+      ```
+      NAME              STATUS   AGE
+      default           Active   10m
+      kube-node-lease   Active   10m
+      kube-public       Active   10m
+      kube-system       Active   10m
+      ```
+  * Then I ran `kubectl get pods --all-namespaces` to confirm pods were working and received - 
+
+      ```
+      NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
+      kube-system   calico-kube-controllers-6dfcd885bf-r2h6t   1/1     Running   0          10m
+      kube-system   calico-node-gtjj8                          1/1     Running   0          10m
+      kube-system   coredns-74ff55c5b-69b2q                    1/1     Running   0          10m
+      kube-system   coredns-74ff55c5b-gpddk                    1/1     Running   0          10m
+      kube-system   etcd-ip-10-0-0-135                         1/1     Running   0          11m
+      kube-system   kube-apiserver-ip-10-0-0-135               1/1     Running   0          11m
+      kube-system   kube-controller-manager-ip-10-0-0-135      1/1     Running   0          11m
+      kube-system   kube-proxy-45pvb                           1/1     Running   0          10m
+      kube-system   kube-scheduler-ip-10-0-0-135               1/1     Running   0          11m 
+      ```
+  
+  9. Ran the following command: ansible-playbook kube-workers.yml -i inventory.ini --private-key ../keys/everischallenge
+    * Recevied this error - "skipping: no hosts matched" for the step in the playbook below 
+      ```
+      - hosts: workers
+    become: yes
+    tasks:
+
+      - name: join cluster
+        shell: "{{ hostvars['master'].join_command }} >> node_join.txt"
+        args:
+          chdir: $HOME
+          creates: node_join.txt
+      ```
+  10. To see that the worker pod was running I ran the following command from master
+  * kube@ip-10-0-0-135:~$ kubectl get pods -o wide
+  * The IP 10.0.0.35 is the ec2 instance of the worker
+  * 10.99.0.0/16 is the ip address that was used when the kubeadm init command was run via ansible. 
+    As you can see the calico nodes are there I'm not sure if this is expected I believe it is. 
+
+    ```
+    NAME                                       READY   STATUS    RESTARTS   AGE     IP            NODE            NOMINATED NODE   READINESS GATES
+    calico-kube-controllers-6dfcd885bf-r2h6t   1/1     Running   0          3h42m   10.99.208.3   ip-10-0-0-135   <none>           <none>
+    calico-node-f2sw9                          1/1     Running   0          25m     10.0.0.35     ip-10-0-0-35    <none>           <none>
+    calico-node-gtjj8                          1/1     Running   0          3h42m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+    coredns-74ff55c5b-69b2q                    1/1     Running   0          3h42m   10.99.208.2   ip-10-0-0-135   <none>           <none>
+    coredns-74ff55c5b-gpddk                    1/1     Running   0          3h42m   10.99.208.1   ip-10-0-0-135   <none>           <none>
+    etcd-ip-10-0-0-135                         1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+    kube-apiserver-ip-10-0-0-135               1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+    kube-controller-manager-ip-10-0-0-135      1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+    kube-proxy-2vp2f                           1/1     Running   0          25m     10.0.0.35     ip-10-0-0-35    <none>           <none>
+    kube-proxy-45pvb                           1/1     Running   0          3h42m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+    kube-scheduler-ip-10-0-0-135               1/1     Running   0          3h43m   10.0.0.135    ip-10-0-0-135   <none>           <none>
+    ```
+
+
+## Conclusion Notes 
+* Mistaking noticed I hadn't used the "deploy" group - so I went ahead and created that via ec2-user data and ran through all the steps again (from Step3)
+
+---  
+
 # Everis Technical Exercise
 
 A technical exercise using Ubuntu and ansible to configure a basic kubernetes cluster consisting of a single master and single worker node using the popular kubeadm for bootstrapping. It's not expected or required to have any specific Kubernetes experience to be able to complete the tasks in this exercise. This is a typical example of a cluster setup that someone may use as their own lab environment.
