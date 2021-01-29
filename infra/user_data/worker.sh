@@ -17,3 +17,5 @@ systemctl restart networking
 echo "Adding deploy to sudo group"
 usermod -aG sudo deploy
 echo '%deploy ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+swapoff -a
