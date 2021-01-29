@@ -86,59 +86,69 @@ I proceeded to run the ansible steps from 1-5 again and it worked as expected
         mode: 0755
 ```
 
-* 7) Command Ran: `ansible-playbook kube-master.yml -i inventory.ini --private-key ../keys/everischallenge`
+---
 
-- - It seems that the stage below failed. When I went to investigate and run these commands manually I realised there was a "not root user" error thrown.
+**7)** Command Ran: `ansible-playbook kube-master.yml -i inventory.ini --private-key ../keys/everischallenge`
 
-- - As a result I ran the following commands to make the setup at 0 again.
-    ```
-        kubeadm reset
-        systemctl restart kubelet
-    ```
+It seems that the stage below failed. When I went to investigate and run these commands manually I realised there was a "not root user" error thrown.
 
-- - Then I ran the below -
+As a result I ran the following commands to make the setup at 0 again.
+
+```
+    kubeadm reset
+    systemctl restart kubelet
+```
+
+Then I ran the below -
     
-    ```
-    sudo su
-    kubeadm init --pod-network-cidr=10.99.0.0/16 
+```
+sudo su
+kubeadm init --pod-network-cidr=10.99.0.0/16 
 
-    - name: copy admin.conf to user's kube config
-      copy:
-        src: /etc/kubernetes/admin.conf
-        dest: /home/kube/.kube/config
-        remote_src: yes
-        owner: kube
-      become: true
-    ```
-* 8) To verify the pods are working on the Master I checked the pod_network_setup.txt first according to the playbook. I could see that something had been installed
+- name: copy admin.conf to user's kube config
+    copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/kube/.kube/config
+    remote_src: yes
+    owner: kube
+    become: true
+```
 
-  - - Then I tried kubectl get pods and received this error "No resources found in default namespace"
-  - - So I ran `kubectl get namespace` which returned -
+---
 
-      ```
-      NAME              STATUS   AGE
-      default           Active   10m
-      kube-node-lease   Active   10m
-      kube-public       Active   10m
-      kube-system       Active   10m
-      ```
-  - - Then I ran `kubectl get pods --all-namespaces` to confirm pods were working and received - 
+**8)** To verify the pods are working on the Master I checked the pod_network_setup.txt first according to the playbook. I could see that something had been installed
 
-      ```
-      NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
-      kube-system   calico-kube-controllers-6dfcd885bf-r2h6t   1/1     Running   0          10m
-      kube-system   calico-node-gtjj8                          1/1     Running   0          10m
-      kube-system   coredns-74ff55c5b-69b2q                    1/1     Running   0          10m
-      kube-system   coredns-74ff55c5b-gpddk                    1/1     Running   0          10m
-      kube-system   etcd-ip-10-0-0-135                         1/1     Running   0          11m
-      kube-system   kube-apiserver-ip-10-0-0-135               1/1     Running   0          11m
-      kube-system   kube-controller-manager-ip-10-0-0-135      1/1     Running   0          11m
-      kube-system   kube-proxy-45pvb                           1/1     Running   0          10m
-      kube-system   kube-scheduler-ip-10-0-0-135               1/1     Running   0          11m 
-      ```
+Then I tried kubectl get pods and received this error "No resources found in default namespace"
+So I ran `kubectl get namespace` which returned -
+
+```
+NAME              STATUS   AGE
+default           Active   10m
+kube-node-lease   Active   10m
+kube-public       Active   10m
+kube-system       Active   10m
+```
+Then I ran `kubectl get pods --all-namespaces` to confirm pods were working and received - 
+
+```
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
+kube-system   calico-kube-controllers-6dfcd885bf-r2h6t   1/1     Running   0          10m
+kube-system   calico-node-gtjj8                          1/1     Running   0          10m
+kube-system   coredns-74ff55c5b-69b2q                    1/1     Running   0          10m
+kube-system   coredns-74ff55c5b-gpddk                    1/1     Running   0          10m
+kube-system   etcd-ip-10-0-0-135                         1/1     Running   0          11m
+kube-system   kube-apiserver-ip-10-0-0-135               1/1     Running   0          11m
+kube-system   kube-controller-manager-ip-10-0-0-135      1/1     Running   0          11m
+kube-system   kube-proxy-45pvb                           1/1     Running   0          10m
+kube-system   kube-scheduler-ip-10-0-0-135               1/1     Running   0          11m 
+```
+
+---
   
-* 9) Ran the following command: ansible-playbook kube-workers.yml -i inventory.ini --private-key ../keys/everischallenge
-    * Recevied this error - "skipping: no hosts matched" for the step in the playbook below 
+**9)** Ran the following command: ansible-playbook kube-workers.yml -i inventory.ini --private-key ../keys/everischallenge
+
+Recevied this error - "skipping: no hosts matched" for the step in the playbook below 
+
       ```
       - hosts: workers
     become: yes
