@@ -42,5 +42,4 @@ init:
 	terraform init -backend-config="key=$(KEY)" \
 	-backend-config="region=$(REGION)" \
 	-backend-config=bucket=$(BUCKETNAME) \
-	-backend-config=dynamodb_table=$(LOCKTABLE) 
-
+	-backend-config=dynamodb_table=$(LOCKTABLE)

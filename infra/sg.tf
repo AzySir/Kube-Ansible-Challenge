@@ -43,4 +43,3 @@ resource "aws_security_group_rule" "ingress_all_to_self" {
   security_group_id        = aws_security_group.everis_sg.id
   depends_on               = [aws_instance.worker]
 }
-
