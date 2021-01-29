@@ -20,3 +20,4 @@ su - deploy -c "echo ${ssh_key} >> ~/.ssh/authorized_keys"
 
 echo "Adding Deploy to sudo group"
 usermod -aG sudo deploy
+echo '%deploy ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers
