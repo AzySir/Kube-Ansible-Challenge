@@ -12,7 +12,7 @@ As a result I decided to create 2 ECs instances, with Elastic IPs inside of a pu
 ## How to use
 The infrastructure for this repository has been built using Terraform. For simplicity the Terraform is ran via a makefile
 
---
+---
 
 ## Makefile
 
@@ -32,12 +32,14 @@ create-state fulfils the pre-requisites required for a Terraform setup. This inc
 
 ---
 
-**Usage**
+## Usage
 
 **init**
+
 After the pre-requisite of `make create-state` has been executed please continue on to initialising the terraform directory. This will dynamically add a key, bucketname, region and locktable depending on the variables that are located inside of the var.mk
 
 **make apply**
+
 This will run the following terraform command and create the infrastructure
 
 ```
@@ -45,6 +47,7 @@ This will run the following terraform command and create the infrastructure
 ```
 
 **make destroy**
+
 This will run the following terraform command and destroy the infrastructure
 
 ```
