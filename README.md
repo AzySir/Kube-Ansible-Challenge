@@ -36,9 +36,10 @@ This also has it's own Makefile to make things easier
 
 ---
 
-* 4) Added the below variables into the hosts inventory.ini
+**4)** Added the below variables into the hosts inventory.ini
 
         ```
+
         apt_key="https://packages.cloud.google.com/apt/doc/apt-key.gpg" 
         repo="deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
@@ -49,6 +50,7 @@ This also has it's own Makefile to make things easier
         ```
         url: "{{ hostvars.master1.apt_key }}"
         repo: "{{ hostvars.worker1.repo }}"
+        
         ```
 
 
