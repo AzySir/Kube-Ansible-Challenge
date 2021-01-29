@@ -17,3 +17,8 @@ variable "az" {
 variable "size" {
   type = number
 }
+
+variable "key" {
+  sensitive = true
+  type = string
+}
