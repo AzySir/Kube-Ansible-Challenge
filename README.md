@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # README (Notes located under this file)
 ---
 
@@ -258,6 +259,9 @@ kube-scheduler-ip-10-0-0-135               1/1     Running   0          3h43m   
 ---  
 
 # Everis Technical Exercise
+=======
+# A code challenge...
+>>>>>>> 691be28a98a7ad4712fa54024a2ed8612f25421f
 
 A technical exercise using Ubuntu and ansible to configure a basic kubernetes cluster consisting of a single master and single worker node using the popular kubeadm for bootstrapping. It's not expected or required to have any specific Kubernetes experience to be able to complete the tasks in this exercise. This is a typical example of a cluster setup that someone may use as their own lab environment.
 
