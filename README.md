@@ -1,4 +1,4 @@
-# Everis Technical Exercise
+# A code challenge...
 
 A technical exercise using Ubuntu and ansible to configure a basic kubernetes cluster consisting of a single master and single worker node using the popular kubeadm for bootstrapping. It's not expected or required to have any specific Kubernetes experience to be able to complete the tasks in this exercise. This is a typical example of a cluster setup that someone may use as their own lab environment.
 
